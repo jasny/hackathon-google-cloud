@@ -1,0 +1,17 @@
+# Node
+node_modules/
+.yarn/
+.pnp.*
+dist/
+build/
+.cache/
+
+# Vite
+dist/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
