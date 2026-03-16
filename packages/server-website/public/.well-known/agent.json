@@ -1,0 +1,72 @@
+{
+  "name": "De Staatsman",
+  "description": "Agent for the Dutch political party De Staatsman. Provides information about the party, policy positions and supporter registration.",
+  "version": "1.0.0",
+  "provider": {
+    "organization": "De Staatsman"
+  },
+  "authentication": {
+    "type": "none"
+  },
+  "endpoints": {
+    "messages": "/a2a/messages",
+    "tasks": "/a2a/tasks",
+    "artifacts": "/a2a/artifacts"
+  },
+  "capabilities": [
+    {
+      "name": "policy_information",
+      "description": "Returns information about a policy topic.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "topic": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    {
+      "name": "newsletter_signup",
+      "description": "Registers a supporter for the newsletter.",
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "email"
+        ],
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "name": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    {
+      "name": "membership_application",
+      "description": "Submit an application to become a member.",
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "name",
+          "email",
+          "country"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "country": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  ]
+}
