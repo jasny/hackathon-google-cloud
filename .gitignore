@@ -6,8 +6,9 @@ dist/
 build/
 .cache/
 
-# Vite
+# Vite / Plasmo
 dist/
+.plasmo/
 
 # IDE
 .vscode/
@@ -15,3 +16,4 @@ dist/
 
 # OS
 .DS_Store
+
