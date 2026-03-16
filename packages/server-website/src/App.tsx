@@ -1,11 +1,25 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { Header } from './components/Header';
+import { Footer } from './components/Footer';
+import { Home } from './pages/Home';
+import { Vision } from './pages/Vision';
 
 function App() {
+  const [currentPage, setCurrentPage] = useState<'home' | 'vision'>('home');
+
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-      <h1 className="text-4xl font-bold text-blue-600">
-        Hello from React + Tailwind!
-      </h1>
+    <div className="min-h-screen bg-[#f8f9fb] flex flex-col font-inter">
+      <Header currentPage={currentPage} onPageChange={setCurrentPage} />
+      
+      <div className="flex-1">
+        {currentPage === 'home' ? (
+          <Home onNavigateToVision={() => setCurrentPage('vision')} />
+        ) : (
+          <Vision />
+        )}
+      </div>
+
+      <Footer />
     </div>
   );
 }
