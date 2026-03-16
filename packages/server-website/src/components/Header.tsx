@@ -1,8 +1,10 @@
 import React from 'react';
 
+type Page = 'home' | 'vision' | 'join-us';
+
 interface HeaderProps {
-  currentPage: 'home' | 'vision';
-  onPageChange: (page: 'home' | 'vision') => void;
+  currentPage: Page;
+  onPageChange: (page: Page) => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({ currentPage, onPageChange }) => {
@@ -39,7 +41,14 @@ export const Header: React.FC<HeaderProps> = ({ currentPage, onPageChange }) => 
           <button className="bg-[#003188] text-white px-6 py-2 rounded-lg font-bold hover:scale-[1.02] transition-all active:scale-95 duration-150">
             Donate
           </button>
-          <button className="bg-[#ffdbd0] text-[#3a0b00] px-6 py-2 rounded-lg font-bold hover:scale-[1.02] transition-all active:scale-95 duration-150">
+          <button 
+            className={`px-6 py-2 rounded-lg font-bold hover:scale-[1.02] transition-all active:scale-95 duration-150 ${
+              currentPage === 'join-us' 
+                ? 'bg-white text-[#001e5a]' 
+                : 'bg-[#ffdbd0] text-[#3a0b00]'
+            }`}
+            onClick={() => onPageChange('join-us')}
+          >
             Join Us
           </button>
         </div>

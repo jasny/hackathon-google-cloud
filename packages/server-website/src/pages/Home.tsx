@@ -2,9 +2,10 @@ import React, { useState, useEffect } from 'react';
 
 interface HomeProps {
   onNavigateToVision: () => void;
+  onNavigateToJoinUs: () => void;
 }
 
-export const Home: React.FC<HomeProps> = ({ onNavigateToVision }) => {
+export const Home: React.FC<HomeProps> = ({ onNavigateToVision, onNavigateToJoinUs }) => {
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
     hours: 0,
@@ -59,7 +60,12 @@ export const Home: React.FC<HomeProps> = ({ onNavigateToVision }) => {
               We stand for transparency, innovation, and a human approach in our local politics. Discover our plans for the future.
             </p>
             <div className="flex flex-wrap gap-4 pt-4">
-              <button className="bg-[#ffdbd0] text-[#3a0b00] px-8 py-4 rounded-lg font-extrabold text-lg hover:scale-105 transition-transform">Join Us</button>
+              <button 
+                className="bg-[#ffdbd0] text-[#3a0b00] px-8 py-4 rounded-lg font-extrabold text-lg hover:scale-105 transition-transform"
+                onClick={onNavigateToJoinUs}
+              >
+                Join Us
+              </button>
               <button 
                 className="bg-white/10 backdrop-blur-md border border-white/20 text-white px-8 py-4 rounded-lg font-extrabold text-lg hover:bg-white/20 transition-all"
                 onClick={onNavigateToVision}
