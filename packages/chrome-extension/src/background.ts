@@ -65,11 +65,12 @@ chrome.runtime.onMessageExternal.addListener((message, sender, sendResponse) => 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.type === "REQUEST_CAPABILITY") {
     const tabId = sender.tab?.id;
-    console.log(`Capability requested: ${message.capability} from tab ${tabId}`);
+    const capability = message.capability;
+    console.log(`Capability requested: ${capability} from tab ${tabId}`);
     
-    // Open a standalone popup window, passing the tabId
+    // Open a standalone popup window, passing the tabId and capability
     chrome.windows.create({
-      url: `popup.html?tabId=${tabId}`,
+      url: `popup.html?tabId=${tabId}&capability=${capability}`,
       type: 'popup',
       width: 380,
       height: 600,

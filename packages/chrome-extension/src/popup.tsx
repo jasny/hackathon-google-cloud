@@ -5,37 +5,25 @@ import { Footer } from "./components/Footer"
 import { A2UIRenderer, A2UIComponent } from "./components/A2UIRenderer"
 import { Chat } from "./components/Chat"
 import { Payment } from "./components/Payment"
-import { CreditCard, Loader2 } from "lucide-react"
+import { Loader2 } from "lucide-react"
 
 function Popup() {
   const [loading, setLoading] = useState(true)
   const [siteName, setSiteName] = useState("")
+  const [dynamicComponents, setDynamicComponents] = useState<A2UIComponent[]>([])
   const [chatMode, setChatMode] = useState(false)
   const [paymentMode, setPaymentMode] = useState(false)
   const [isComplete, setIsComplete] = useState(false)
   const [agentFound, setAgentFound] = useState(false)
-
-  // Default demo state
-  const [dataRequests, setDataRequests] = useState({
-    name: true,
-    politicalAffiliation: false,
-  })
-
-  const [demographicItems, setDemographicItems] = useState([
-    { id: "age", label: "Age", checked: true },
-    { id: "gender", label: "Gender", checked: true },
-  ])
-
-  const [addressItems, setAddressItems] = useState([
-    { id: "city", label: "City", checked: true },
-    { id: "streetName", label: "Street Name", checked: false },
-  ])
+  const [sessionId, setSessionId] = useState("")
+  const [capability, setCapability] = useState("hello")
 
   useEffect(() => {
     const loadAgentData = async () => {
-      // Get tabId from URL or query active tab
       const urlParams = new URLSearchParams(window.location.search);
       let tabId = urlParams.get('tabId') ? parseInt(urlParams.get('tabId')!) : null;
+      const cap = urlParams.get('capability') || "hello";
+      setCapability(cap);
 
       if (!tabId) {
         const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
@@ -49,105 +37,104 @@ function Popup() {
           const agent = result[key];
           setSiteName(agent.name);
           setAgentFound(true);
+
+          const sId = `session_${tabId}_${cap}`;
+          setSessionId(sId);
+
+          try {
+            const response = await fetch(`http://localhost:8080/v3/projects/demo/locations/global/agents/user-agent/sessions/${sId}:detectIntent`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                queryInput: { text: { text: "connect" } },
+                queryParams: {
+                  userId: "user-123",
+                  capability: cap,
+                  serverAgent: { origin: agent.origin }
+                }
+              })
+            });
+
+            if (response.ok) {
+              const data = await response.json();
+              if (data.queryResult?.parameters?.a2ui) {
+                setDynamicComponents(data.queryResult.parameters.a2ui);
+              }
+              // Automatically trigger payment mode if User Agent says so
+              if (data.queryResult?.parameters?.triggerPayment) {
+                setPaymentMode(true);
+              }
+            }
+          } catch (error) {
+            console.error("Failed to connect to User Agent:", error);
+          }
         }
       }
       setLoading(false);
     };
 
     loadAgentData();
-  }, []);
 
-  const isUnknownActive = !isComplete && dataRequests.politicalAffiliation
+    const handleUnload = () => {
+      if (sessionId) {
+        const url = `http://localhost:8080/v3/projects/demo/locations/global/agents/user-agent/sessions/${sessionId}:detectIntent`;
+        const body = JSON.stringify({
+          queryInput: { text: { text: "END_SESSION" } }
+        });
+        const blob = new Blob([body], { type: 'application/json' });
+        navigator.sendBeacon(url, blob);
+      }
+    };
 
-  const a2uiComponents: A2UIComponent[] = useMemo(() => [
-    {
-      id: "root",
-      type: "Container",
-      children: ["header-1", "item-name", "item-demographics", "item-politicalAffiliation", "item-address"]
-    },
-    {
-      id: "header-1",
-      type: "SectionHeader",
-      props: { text: "Data Request" }
-    },
-    {
-      id: "item-name",
-      type: "DataRequestItem",
-      props: {
-        label: "Name",
-        description: "Necessary for personalizing communication and official registration in the database.",
-        state: dataRequests.name ? "on" : "off"
-      }
-    },
-    {
-      id: "item-demographics",
-      type: "NestedDataRequestItem",
-      props: {
-        label: "Demographics",
-        items: demographicItems,
-        footerText: "Used for statistical analysis and tailored content.",
-        open: false
-      }
-    },
-    {
-      id: "item-politicalAffiliation",
-      type: "DataRequestItem",
-      props: {
-        label: "Political Affiliation",
-        description: "Sensitive data: Used to show targeted political advertisements and information.",
-        state: dataRequests.politicalAffiliation ? "on" : "off",
-        isUnknown: !isComplete
-      }
-    },
-    {
-      id: "item-address",
-      type: "NestedDataRequestItem",
-      props: {
-        label: "Address",
-        items: addressItems,
-        footerText: "Required for regional campaign texts and invitations to local meetings.",
-        open: true
-      }
-    }
-  ], [dataRequests, demographicItems, addressItems, isComplete])
+    window.addEventListener('unload', handleUnload);
+    return () => {
+      window.removeEventListener('unload', handleUnload);
+    };
+  }, [sessionId]);
+
+  const isUnknownActive = useMemo(() => {
+    if (isComplete) return false;
+    return dynamicComponents.some(c => 
+      c.type === "DataRequestItem" && 
+      c.props?.isUnknown && 
+      c.props?.state === "on"
+    );
+  }, [dynamicComponents, isComplete]);
 
   const handleAction = (id: string, action: string, payload?: any) => {
-    if (id === "item-name" && action === "toggle") {
-      setDataRequests(prev => ({ ...prev, name: !prev.name }))
-    } else if (id === "item-politicalAffiliation" && action === "toggle") {
-      setDataRequests(prev => ({ ...prev, politicalAffiliation: !prev.politicalAffiliation }))
-    } else if (id === "item-demographics") {
-      if (action === "toggleItem") {
-        const itemId = payload.itemId
-        setDemographicItems(prev => prev.map(item => 
-          item.id === itemId ? { ...item, checked: !item.checked } : item
-        ))
-      } else if (action === "toggleAll") {
-        const checked = payload.checked
-        setDemographicItems(prev => prev.map(item => ({ ...item, checked })))
+    setDynamicComponents(prev => prev.map(c => {
+      if (c.id === id) {
+        if (action === "toggle") {
+          return { ...c, props: { ...c.props, state: payload.state } };
+        }
+        if (action === "toggleItem") {
+          const newItems = c.props.items.map((item: any) => 
+            item.id === payload.itemId ? { ...item, checked: !item.checked } : item
+          );
+          return { ...c, props: { ...c.props, items: newItems } };
+        }
+        if (action === "toggleAll") {
+          const newItems = c.props.items.map((item: any) => ({ ...item, checked: payload.checked }));
+          return { ...c, props: { ...c.props, items: newItems } };
+        }
       }
-    } else if (id === "item-address") {
-      if (action === "toggleItem") {
-        const itemId = payload.itemId
-        setAddressItems(prev => prev.map(item => 
-          item.id === itemId ? { ...item, checked: !item.checked } : item
-        ))
-      } else if (action === "toggleAll") {
-        const checked = payload.checked
-        setAddressItems(prev => prev.map(item => ({ ...item, checked })))
-      }
-    }
-  }
+      return c;
+    }));
+  };
 
   const handlePrimaryAction = () => {
     if (isUnknownActive) {
       setChatMode(true)
     } else {
       console.log("Sharing selected data...")
+      setIsComplete(true);
     }
   }
 
-  const handleChatComplete = () => {
+  const handleChatComplete = (updatedA2UI?: A2UIComponent[]) => {
+    if (updatedA2UI) {
+      setDynamicComponents(updatedA2UI);
+    }
     setChatMode(false)
     setIsComplete(true)
   }
@@ -185,32 +172,36 @@ function Popup() {
               onConfirm={() => {
                 console.log("Payment confirmed!")
                 setPaymentMode(false)
+                setIsComplete(true)
               }}
               onCancel={() => setPaymentMode(false)}
             />
           ) : chatMode ? (
-            <Chat onComplete={handleChatComplete} />
+            <Chat sessionId={sessionId} onComplete={handleChatComplete} />
+          ) : isComplete ? (
+            <div className="p-8 text-center space-y-4">
+              <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto">
+                <Loader2 className="h-8 w-8 text-primary" />
+              </div>
+              <h3 className="text-lg font-bold text-primary">Request Successful</h3>
+              <p className="text-xs text-on-surface-variant leading-relaxed">
+                Your agent has shared the data and completed the transaction. You can close this window now.
+              </p>
+            </div>
           ) : (
             <div className="p-5">
-              <A2UIRenderer components={a2uiComponents} onAction={handleAction} />
+              <A2UIRenderer components={dynamicComponents} onAction={handleAction} />
             </div>
           )}
         </main>
         
-        {!chatMode && !paymentMode && (
+        {!chatMode && !paymentMode && !isComplete && (
           <div className="relative">
             <Footer 
               primaryButtonText={isUnknownActive ? "Continue" : "Share Selected"} 
               onPrimaryAction={handlePrimaryAction}
-              onDenyAll={() => console.log("Denied all")}
+              onDenyAll={() => window.close()}
             />
-            <button
-              onClick={() => setPaymentMode(true)}
-              className="absolute -top-3 right-5 p-1.5 bg-white border border-slate-200 rounded-full shadow-sm text-slate-400 hover:text-primary hover:border-primary transition-all z-10"
-              title="Test AP2 Payment"
-            >
-              <CreditCard className="h-3 w-3" />
-            </button>
           </div>
         )}
       </div>

@@ -47,7 +47,7 @@ export const AgentDiscovery = () => {
         </div>
         
         <p className="text-sm text-on-surface-variant leading-relaxed">
-          De Staatsman supports the <strong>A2UI protocol</strong>. Securely share your preferences and details with one click.
+          De Staatsman supports the <strong>Agent Connect protocol</strong>. Securely share your preferences and details with one click.
         </p>
 
         <button 

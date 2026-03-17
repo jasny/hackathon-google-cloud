@@ -11,13 +11,23 @@ type Page = 'home' | 'vision' | 'join-us';
 function App() {
   const [currentPage, setCurrentPage] = useState<Page>('home');
 
+  const handleJoinUs = () => {
+    // @ts-ignore
+    if (window.agentconnect) {
+      // @ts-ignore
+      window.agentconnect.request('membership_application');
+    } else {
+      setCurrentPage('join-us');
+    }
+  };
+
   const renderPage = () => {
     switch (currentPage) {
       case 'home':
         return (
           <Home 
             onNavigateToVision={() => setCurrentPage('vision')} 
-            onNavigateToJoinUs={() => setCurrentPage('join-us')} 
+            onNavigateToJoinUs={handleJoinUs} 
           />
         );
       case 'vision':
@@ -28,7 +38,7 @@ function App() {
         return (
           <Home 
             onNavigateToVision={() => setCurrentPage('vision')} 
-            onNavigateToJoinUs={() => setCurrentPage('join-us')} 
+            onNavigateToJoinUs={handleJoinUs} 
           />
         );
     }
@@ -36,7 +46,11 @@ function App() {
 
   return (
     <div className="min-h-screen bg-[#f8f9fb] flex flex-col font-inter">
-      <Header currentPage={currentPage === 'join-us' ? 'home' : currentPage} onPageChange={setCurrentPage} />
+      <Header 
+        currentPage={currentPage === 'join-us' ? 'home' : currentPage} 
+        onPageChange={setCurrentPage} 
+        onJoinUs={handleJoinUs}
+      />
       
       <div className="flex-1">
         {renderPage()}

@@ -66,7 +66,7 @@ export default function Dashboard() {
           <div>
             <h1 className="text-4xl font-black text-slate-900 tracking-tight">Permissions</h1>
             <p className="text-slate-500 mt-2 text-lg font-medium">
-              Manage data you've shared with websites via the A2UI/AP2 protocol.
+              Manage data you've shared with websites via the Agent Connect protocol.
             </p>
           </div>
           <div className="flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full font-bold text-sm">

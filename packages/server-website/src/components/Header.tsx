@@ -5,9 +5,10 @@ type Page = 'home' | 'vision' | 'join-us';
 interface HeaderProps {
   currentPage: Page;
   onPageChange: (page: Page) => void;
+  onJoinUs: () => void;
 }
 
-export const Header: React.FC<HeaderProps> = ({ currentPage, onPageChange }) => {
+export const Header: React.FC<HeaderProps> = ({ currentPage, onPageChange, onJoinUs }) => {
   return (
     <header className="bg-[#001e5a] sticky top-0 z-50 shadow-[0px_4px_20px_rgba(25,28,30,0.04)]">
       <div className="flex justify-between items-center w-full px-8 py-4 max-w-screen-2xl mx-auto">
@@ -38,16 +39,16 @@ export const Header: React.FC<HeaderProps> = ({ currentPage, onPageChange }) => 
           <a className="text-white/80 font-medium hover:text-white transition-colors uppercase tracking-wider" href="#">Events</a>
         </nav>
         <div className="flex items-center gap-4">
-          <button className="bg-[#003188] text-white px-6 py-2 rounded-lg font-bold hover:scale-[1.02] transition-all active:scale-95 duration-150">
+          <button className="bg-[#003188] text-white px-6 py-2 rounded-lg font-bold hover:scale-[1.02] transition-all active:scale-[0.99] duration-150">
             Donate
           </button>
           <button 
-            className={`px-6 py-2 rounded-lg font-bold hover:scale-[1.02] transition-all active:scale-95 duration-150 ${
+            className={`px-6 py-2 rounded-lg font-bold hover:scale-[1.02] transition-all active:scale-[0.99] duration-150 ${
               currentPage === 'join-us' 
                 ? 'bg-white text-[#001e5a]' 
                 : 'bg-[#ffdbd0] text-[#3a0b00]'
             }`}
-            onClick={() => onPageChange('join-us')}
+            onClick={onJoinUs}
           >
             Join Us
           </button>
