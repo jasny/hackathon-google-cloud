@@ -116,7 +116,7 @@ function Popup() {
       <div className="w-[360px] bg-white border border-slate-200 rounded-xl shadow-xl overflow-hidden flex flex-col">
         <Header />
         
-        <main className="flex-1 overflow-y-auto custom-scrollbar p-0 max-h-[400px]">
+        <main className="flex-1 p-0">
           {chatMode ? (
             <Chat />
           ) : (
