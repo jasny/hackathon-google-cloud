@@ -42,7 +42,12 @@ export const NestedDataRequestItem = ({
       <summary className="flex items-center justify-between p-3 cursor-pointer hover:bg-slate-50">
         <div className="flex items-center gap-2">
           <ChevronDown className="h-3.5 w-3.5 text-slate-400 transition-transform duration-200 group-open:rotate-180" />
-          <span className="text-xs font-bold text-slate-900">{label}</span>
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-medium text-slate-900">{label}</span>
+            <span className="flex items-center justify-center px-1.5 py-0.5 rounded-full bg-slate-100 text-[10px] font-bold text-slate-500">
+              {items.length}
+            </span>
+          </div>
         </div>
         <div className="flex items-center gap-2">
           <Switch 

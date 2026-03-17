@@ -13,10 +13,13 @@ function Popup() {
   const [isComplete, setIsComplete] = useState(false)
   const [dataRequests, setDataRequests] = useState({
     name: true,
-    age: true,
-    gender: false,
     politicalAffiliation: false,
   })
+
+  const [demographicItems, setDemographicItems] = useState([
+    { id: "age", label: "Age", checked: true },
+    { id: "gender", label: "Gender", checked: true },
+  ])
 
   const [addressItems, setAddressItems] = useState([
     { id: "city", label: "City", checked: true },
@@ -29,7 +32,7 @@ function Popup() {
     {
       id: "root",
       type: "Container",
-      children: ["header-1", "item-name", "item-age", "item-gender", "item-politicalAffiliation", "item-address"]
+      children: ["header-1", "item-name", "item-demographics", "item-politicalAffiliation", "item-address"]
     },
     {
       id: "header-1",
@@ -46,21 +49,13 @@ function Popup() {
       }
     },
     {
-      id: "item-age",
-      type: "DataRequestItem",
+      id: "item-demographics",
+      type: "NestedDataRequestItem",
       props: {
-        label: "Age",
-        description: "Used to compile demographic statistics and tailor content to your age group.",
-        state: dataRequests.age ? "on" : "off"
-      }
-    },
-    {
-      id: "item-gender",
-      type: "DataRequestItem",
-      props: {
-        label: "Gender",
-        description: "For statistical purposes to analyze representation within the party.",
-        state: dataRequests.gender ? "on" : "off"
+        label: "Demographics",
+        items: demographicItems,
+        footerText: "Used for statistical analysis and tailored content.",
+        open: false
       }
     },
     {
@@ -83,17 +78,23 @@ function Popup() {
         open: true
       }
     }
-  ], [dataRequests, addressItems, isComplete])
+  ], [dataRequests, demographicItems, addressItems, isComplete])
 
   const handleAction = (id: string, action: string, payload?: any) => {
     if (id === "item-name" && action === "toggle") {
       setDataRequests(prev => ({ ...prev, name: !prev.name }))
-    } else if (id === "item-age" && action === "toggle") {
-      setDataRequests(prev => ({ ...prev, age: !prev.age }))
-    } else if (id === "item-gender" && action === "toggle") {
-      setDataRequests(prev => ({ ...prev, gender: !prev.gender }))
     } else if (id === "item-politicalAffiliation" && action === "toggle") {
       setDataRequests(prev => ({ ...prev, politicalAffiliation: !prev.politicalAffiliation }))
+    } else if (id === "item-demographics") {
+      if (action === "toggleItem") {
+        const itemId = payload.itemId
+        setDemographicItems(prev => prev.map(item => 
+          item.id === itemId ? { ...item, checked: !item.checked } : item
+        ))
+      } else if (action === "toggleAll") {
+        const checked = payload.checked
+        setDemographicItems(prev => prev.map(item => ({ ...item, checked })))
+      }
     } else if (id === "item-address") {
       if (action === "toggleItem") {
         const itemId = payload.itemId
