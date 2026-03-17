@@ -7690,6 +7690,7 @@ __metadata:
     "@vitejs/plugin-react": "npm:^4.0.0"
     autoprefixer: "npm:^10.4.14"
     eslint: "npm:^8.0.0"
+    lucide-react: "npm:^0.577.0"
     postcss: "npm:^8.4.24"
     react: "npm:^18.2.0"
     react-dom: "npm:^18.2.0"
