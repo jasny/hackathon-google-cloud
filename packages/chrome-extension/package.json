@@ -11,8 +11,18 @@
   },
   "manifest": {
     "permissions": [
-      "contextMenus"
-    ]
+      "contextMenus",
+      "storage",
+      "tabs"
+    ],
+    "host_permissions": [
+      "https://*/*",
+      "http://localhost/*",
+      "http://localhost:5173/*"
+    ],
+    "externally_connectable": {
+      "matches": ["http://localhost:5173/*"]
+    }
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.2.4",

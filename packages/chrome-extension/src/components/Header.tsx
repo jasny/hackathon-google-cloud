@@ -1,6 +1,10 @@
 import React from "react"
 
-export const Header = () => {
+interface HeaderProps {
+  siteName?: string
+}
+
+export const Header = ({ siteName = "Political Party X" }: HeaderProps) => {
   return (
     <header className="p-5 border-b border-border bg-white">
       <div className="flex flex-col gap-4">
@@ -20,7 +24,7 @@ export const Header = () => {
         </div>
         <div className="bg-slate-50 border border-slate-100 rounded-lg p-3">
           <p className="text-[11px] text-slate-500 leading-relaxed">
-            <span className="font-bold text-slate-900">Political Party X</span> requests data for campaign optimization and member management.
+            <span className="font-bold text-slate-900">{siteName}</span> requests data for campaign optimization and member management.
           </p>
         </div>
       </div>

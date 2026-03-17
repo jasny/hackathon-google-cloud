@@ -1,16 +1,21 @@
 import "./index.css"
-import React, { useState, useMemo } from "react"
+import React, { useState, useMemo, useEffect } from "react"
 import { Header } from "./components/Header"
 import { Footer } from "./components/Footer"
 import { A2UIRenderer, A2UIComponent } from "./components/A2UIRenderer"
 import { Chat } from "./components/Chat"
 import { Payment } from "./components/Payment"
-import { CreditCard } from "lucide-react"
+import { CreditCard, Loader2 } from "lucide-react"
 
 function Popup() {
+  const [loading, setLoading] = useState(true)
+  const [siteName, setSiteName] = useState("")
   const [chatMode, setChatMode] = useState(false)
   const [paymentMode, setPaymentMode] = useState(false)
   const [isComplete, setIsComplete] = useState(false)
+  const [agentFound, setAgentFound] = useState(false)
+
+  // Default demo state
   const [dataRequests, setDataRequests] = useState({
     name: true,
     politicalAffiliation: false,
@@ -25,6 +30,32 @@ function Popup() {
     { id: "city", label: "City", checked: true },
     { id: "streetName", label: "Street Name", checked: false },
   ])
+
+  useEffect(() => {
+    const loadAgentData = async () => {
+      // Get tabId from URL or query active tab
+      const urlParams = new URLSearchParams(window.location.search);
+      let tabId = urlParams.get('tabId') ? parseInt(urlParams.get('tabId')!) : null;
+
+      if (!tabId) {
+        const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+        tabId = tab?.id || null;
+      }
+
+      if (tabId) {
+        const key = `agent_${tabId}`;
+        const result = await chrome.storage.local.get(key);
+        if (result[key]) {
+          const agent = result[key];
+          setSiteName(agent.name);
+          setAgentFound(true);
+        }
+      }
+      setLoading(false);
+    };
+
+    loadAgentData();
+  }, []);
 
   const isUnknownActive = !isComplete && dataRequests.politicalAffiliation
 
@@ -121,10 +152,32 @@ function Popup() {
     setIsComplete(true)
   }
 
+  if (loading) {
+    return (
+      <div className="w-[360px] h-[500px] flex items-center justify-center bg-slate-50">
+        <Loader2 className="h-8 w-8 text-primary animate-spin" />
+      </div>
+    );
+  }
+
+  if (!agentFound) {
+    return (
+      <div className="w-[360px] h-[500px] flex flex-col items-center justify-center bg-slate-50 p-8 text-center">
+        <div className="bg-white p-4 rounded-full shadow-sm mb-4">
+          <Loader2 className="h-8 w-8 text-slate-200" />
+        </div>
+        <h3 className="text-lg font-bold text-slate-900 mb-2">No Agent Detected</h3>
+        <p className="text-xs text-slate-500 leading-relaxed">
+          Navigate to a website with a valid <code>agent.json</code> to start an introduction.
+        </p>
+      </div>
+    );
+  }
+
   return (
     <main className="bg-slate-50 flex justify-center items-start min-h-[500px]">
       <div className="w-[360px] bg-white border border-slate-200 rounded-xl shadow-xl overflow-hidden flex flex-col">
-        {!paymentMode && <Header />}
+        {!paymentMode && <Header siteName={siteName} />}
         
         <main className="flex-1 p-0">
           {paymentMode ? (

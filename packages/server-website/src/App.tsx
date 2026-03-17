@@ -4,6 +4,7 @@ import { Footer } from './components/Footer';
 import { Home } from './pages/Home';
 import { Vision } from './pages/Vision';
 import { JoinUs } from './pages/JoinUs';
+import { AgentDiscovery } from './components/AgentDiscovery';
 
 type Page = 'home' | 'vision' | 'join-us';
 
@@ -42,6 +43,7 @@ function App() {
       </div>
 
       <Footer />
+      <AgentDiscovery />
     </div>
   );
 }
