@@ -39,11 +39,6 @@ export const DataRequestItem = ({
           </div>
         </div>
         <div className="flex items-center gap-2">
-          {state === "partial" && (
-            <span className="text-[9px] text-primary font-bold uppercase tracking-widest">
-              Gedeeltelijk
-            </span>
-          )}
           <Switch
             state={state}
             onStateChange={onStateChange}

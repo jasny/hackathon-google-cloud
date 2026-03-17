@@ -45,11 +45,6 @@ export const NestedDataRequestItem = ({
           <span className="text-xs font-bold text-slate-900">{label}</span>
         </div>
         <div className="flex items-center gap-2">
-          {parentState === "partial" && (
-            <span className="text-[9px] text-primary font-bold uppercase tracking-widest">
-              Gedeeltelijk
-            </span>
-          )}
           <Switch 
             state={parentState} 
             onStateChange={(state) => onToggleAll(state === "on")}
