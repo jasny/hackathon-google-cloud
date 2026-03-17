@@ -3,8 +3,10 @@ import React, { useState, useMemo } from "react"
 import { Header } from "./components/Header"
 import { Footer } from "./components/Footer"
 import { A2UIRenderer, A2UIComponent } from "./components/A2UIRenderer"
+import { Chat } from "./components/Chat"
 
 function Popup() {
+  const [chatMode, setChatMode] = useState(false)
   const [dataRequests, setDataRequests] = useState({
     name: true,
     age: true,
@@ -16,6 +18,8 @@ function Popup() {
     { id: "city", label: "City", checked: true },
     { id: "streetName", label: "Street Name", checked: false },
   ])
+
+  const isUnknownActive = dataRequests.politicalAffiliation
 
   const a2uiComponents: A2UIComponent[] = useMemo(() => [
     {
@@ -61,7 +65,8 @@ function Popup() {
       props: {
         label: "Political Affiliation",
         description: "Sensitive data: Used to show targeted political advertisements and information.",
-        state: dataRequests.politicalAffiliation ? "on" : "off"
+        state: dataRequests.politicalAffiliation ? "on" : "off",
+        isUnknown: true
       }
     },
     {
@@ -98,16 +103,36 @@ function Popup() {
     }
   }
 
+  const handlePrimaryAction = () => {
+    if (isUnknownActive) {
+      setChatMode(true)
+    } else {
+      console.log("Sharing selected data...")
+    }
+  }
+
   return (
     <main className="bg-slate-50 flex justify-center items-start min-h-[500px]">
       <div className="w-[360px] bg-white border border-slate-200 rounded-xl shadow-xl overflow-hidden flex flex-col">
         <Header />
         
-        <main className="flex-1 overflow-y-auto custom-scrollbar p-5 max-h-[400px]">
-          <A2UIRenderer components={a2uiComponents} onAction={handleAction} />
+        <main className="flex-1 overflow-y-auto custom-scrollbar p-0 max-h-[400px]">
+          {chatMode ? (
+            <Chat />
+          ) : (
+            <div className="p-5">
+              <A2UIRenderer components={a2uiComponents} onAction={handleAction} />
+            </div>
+          )}
         </main>
         
-        <Footer />
+        {!chatMode && (
+          <Footer 
+            primaryButtonText={isUnknownActive ? "Continue" : "Share Selected"} 
+            onPrimaryAction={handlePrimaryAction}
+            onDenyAll={() => console.log("Denied all")}
+          />
+        )}
       </div>
     </main>
   )

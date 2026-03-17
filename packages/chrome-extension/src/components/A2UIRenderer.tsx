@@ -41,6 +41,7 @@ export const A2UIRenderer = ({ components, onAction }: A2UIRendererProps) => {
             label={component.props.label}
             description={component.props.description}
             state={component.props.state}
+            isUnknown={component.props.isUnknown}
             onStateChange={(state) => onAction(id, "toggle", { state })}
           />
         )
