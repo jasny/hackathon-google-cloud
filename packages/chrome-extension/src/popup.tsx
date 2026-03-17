@@ -7,6 +7,7 @@ import { Chat } from "./components/Chat"
 
 function Popup() {
   const [chatMode, setChatMode] = useState(false)
+  const [isComplete, setIsComplete] = useState(false)
   const [dataRequests, setDataRequests] = useState({
     name: true,
     age: true,
@@ -19,7 +20,7 @@ function Popup() {
     { id: "streetName", label: "Street Name", checked: false },
   ])
 
-  const isUnknownActive = dataRequests.politicalAffiliation
+  const isUnknownActive = !isComplete && dataRequests.politicalAffiliation
 
   const a2uiComponents: A2UIComponent[] = useMemo(() => [
     {
@@ -66,7 +67,7 @@ function Popup() {
         label: "Political Affiliation",
         description: "Sensitive data: Used to show targeted political advertisements and information.",
         state: dataRequests.politicalAffiliation ? "on" : "off",
-        isUnknown: true
+        isUnknown: !isComplete
       }
     },
     {
@@ -79,7 +80,7 @@ function Popup() {
         open: true
       }
     }
-  ], [dataRequests, addressItems])
+  ], [dataRequests, addressItems, isComplete])
 
   const handleAction = (id: string, action: string, payload?: any) => {
     if (id === "item-name" && action === "toggle") {
@@ -111,6 +112,11 @@ function Popup() {
     }
   }
 
+  const handleChatComplete = () => {
+    setChatMode(false)
+    setIsComplete(true)
+  }
+
   return (
     <main className="bg-slate-50 flex justify-center items-start min-h-[500px]">
       <div className="w-[360px] bg-white border border-slate-200 rounded-xl shadow-xl overflow-hidden flex flex-col">
@@ -118,7 +124,7 @@ function Popup() {
         
         <main className="flex-1 p-0">
           {chatMode ? (
-            <Chat />
+            <Chat onComplete={handleChatComplete} />
           ) : (
             <div className="p-5">
               <A2UIRenderer components={a2uiComponents} onAction={handleAction} />

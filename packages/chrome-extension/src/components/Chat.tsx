@@ -7,10 +7,15 @@ interface Message {
   sender: "ai" | "user"
 }
 
-export const Chat = () => {
+interface ChatProps {
+  onComplete?: () => void
+}
+
+export const Chat = ({ onComplete }: ChatProps) => {
   const [messages, setMessages] = useState<Message[]>([
-    { id: "1", text: "Hello! Can you provide more information about your political affiliation? What subjects do you care about?", sender: "ai" }
+    { id: "1", text: "Hello! I noticed you selected some fields that require more information. How can I help you with your political affiliation?", sender: "ai" }
   ])
+  const [aiResponseCount, setAiResponseCount] = useState(0)
   const [input, setInput] = useState("")
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
@@ -31,14 +36,28 @@ export const Chat = () => {
 
     // Simulate AI response
     setTimeout(() => {
+      const isLastResponse = aiResponseCount >= 1
+      const text = isLastResponse 
+        ? "Thank you! I have enough information now. You can now share your selection."
+        : "I understand. Could you tell me a bit more about your specific interests?"
+
       const aiMsg: Message = { 
         id: (Date.now() + 1).toString(), 
-        text: "I understand. I'll take that into account for your profile.", 
+        text, 
         sender: "ai" 
       }
+
       setMessages(prev => [...prev, aiMsg])
+      setAiResponseCount(prev => prev + 1)
+
+      if (isLastResponse) {
+        setTimeout(() => {
+          onComplete?.()
+        }, 2000)
+      }
     }, 1000)
   }
+
 
   return (
     <div className="flex flex-col h-[400px] bg-slate-50">
