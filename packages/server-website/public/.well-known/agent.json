@@ -9,9 +9,9 @@
     "type": "none"
   },
   "endpoints": {
-    "messages": "/a2a/messages",
-    "tasks": "/a2a/tasks",
-    "artifacts": "/a2a/artifacts"
+    "messages": "http://localhost:3000/a2a/messages",
+    "tasks": "http://localhost:3000/a2a/tasks",
+    "artifacts": "http://localhost:3000/a2a/artifacts"
   },
   "capabilities": [
     {
