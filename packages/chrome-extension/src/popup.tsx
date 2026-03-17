@@ -4,9 +4,12 @@ import { Header } from "./components/Header"
 import { Footer } from "./components/Footer"
 import { A2UIRenderer, A2UIComponent } from "./components/A2UIRenderer"
 import { Chat } from "./components/Chat"
+import { Payment } from "./components/Payment"
+import { CreditCard } from "lucide-react"
 
 function Popup() {
   const [chatMode, setChatMode] = useState(false)
+  const [paymentMode, setPaymentMode] = useState(false)
   const [isComplete, setIsComplete] = useState(false)
   const [dataRequests, setDataRequests] = useState({
     name: true,
@@ -120,10 +123,18 @@ function Popup() {
   return (
     <main className="bg-slate-50 flex justify-center items-start min-h-[500px]">
       <div className="w-[360px] bg-white border border-slate-200 rounded-xl shadow-xl overflow-hidden flex flex-col">
-        <Header />
+        {!paymentMode && <Header />}
         
         <main className="flex-1 p-0">
-          {chatMode ? (
+          {paymentMode ? (
+            <Payment 
+              onConfirm={() => {
+                console.log("Payment confirmed!")
+                setPaymentMode(false)
+              }}
+              onCancel={() => setPaymentMode(false)}
+            />
+          ) : chatMode ? (
             <Chat onComplete={handleChatComplete} />
           ) : (
             <div className="p-5">
@@ -132,12 +143,21 @@ function Popup() {
           )}
         </main>
         
-        {!chatMode && (
-          <Footer 
-            primaryButtonText={isUnknownActive ? "Continue" : "Share Selected"} 
-            onPrimaryAction={handlePrimaryAction}
-            onDenyAll={() => console.log("Denied all")}
-          />
+        {!chatMode && !paymentMode && (
+          <div className="relative">
+            <Footer 
+              primaryButtonText={isUnknownActive ? "Continue" : "Share Selected"} 
+              onPrimaryAction={handlePrimaryAction}
+              onDenyAll={() => console.log("Denied all")}
+            />
+            <button
+              onClick={() => setPaymentMode(true)}
+              className="absolute -top-3 right-5 p-1.5 bg-white border border-slate-200 rounded-full shadow-sm text-slate-400 hover:text-primary hover:border-primary transition-all z-10"
+              title="Test AP2 Payment"
+            >
+              <CreditCard className="h-3 w-3" />
+            </button>
+          </div>
         )}
       </div>
     </main>

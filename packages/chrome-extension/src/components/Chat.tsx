@@ -60,8 +60,8 @@ export const Chat = ({ onComplete }: ChatProps) => {
 
 
   return (
-    <div className="flex flex-col h-[400px] bg-slate-50">
-      <div className="flex-1 overflow-y-auto p-4 space-y-3 custom-scrollbar">
+    <div className="flex flex-col bg-slate-50">
+      <div className="flex-1 overflow-y-auto p-4 space-y-3 custom-scrollbar min-h-[300px] max-h-[450px]">
         {messages.map((msg) => (
           <div
             key={msg.id}
