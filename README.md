@@ -161,10 +161,16 @@ Install dependencies from the repo root:
 yarn install
 ```
 
-Start the website:
+Start the De Staatsman website:
 
 ```bash
-yarn workspace website dev
+yarn workspace server-website dev
+```
+
+Start the dummy user agent:
+
+```bash
+yarn workspace dummy-user-agent dev
 ```
 
 Build the Chrome extension:
