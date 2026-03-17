@@ -1,14 +1,18 @@
 # Agent Connect
 
-An AI trust layer that stores your personal data and payment preferences in a personal memory bank, letting you share information with websites through a controlled consent flow — keeping you in full control while making interactions faster and more seamless.
+An AI trust layer that puts you in control of your personal data. Agent Connect stores your data in a personal memory bank, lets you share it with websites on your own terms, and gives you a single dashboard to see and revoke exactly what you've shared — and for what purpose. The result is a more personalized web, less repetitive form-filling, and genuine GDPR compliance built into the interaction itself.
 
 ## The Problem
 
-Every time you sign up for a new service or make a payment, you fill in the same form fields over and over: name, address, date of birth, payment method. You have no visibility into what data is stored where, and no easy way to revoke it.
+Every time you sign up for a new service, you fill in the same fields: name, address, date of birth, payment method. The website stores a copy and uses it however it likes. You have no visibility into what data is held where, what it is used for, or how to take it back. Meanwhile, the website gets a bare minimum of information because long forms have low completion rates — so both sides lose.
+
+On top of this, GDPR requires organisations to collect data for a specific, stated purpose and not reuse it for something else. In practice, users consent to vague privacy policies they never read, and organisations have no clean way to demonstrate per-field, per-purpose consent.
 
 ## The Solution
 
-Agent Connect is a Chrome extension that acts as a personal data agent. Websites can declare they support the Agent Connect protocol, and users can choose to share specific data fields — and complete payments — through the extension, without typing anything manually. All shared data is tracked and revocable from a central permissions dashboard.
+Agent Connect is a Chrome extension that acts as your personal data agent. Your data lives in your agent — not scattered across dozens of websites. When you visit a site that supports Agent Connect, it tells your agent what data it needs and why. You review the request, choose exactly which fields to share, and confirm. The site receives the data, personalizes your experience immediately, and the interaction is logged in your permissions dashboard with the stated purpose attached.
+
+You stay in control: you can see every field shared with every site and revoke any of it at any time. Websites get richer, more accurate data because sharing is frictionless. And the consent record — with explicit per-field purposes — is exactly what GDPR requires.
 
 ---
 
@@ -38,11 +42,11 @@ When the extension is installed, the De Staatsman website detects it and shows a
 
 ![Agent Discovery widget on homepage](screenshots/screenshot-localhost-5173-2026-03-17-11-43-43.png)
 
-The user clicks **Connect Agent**. The extension opens a consent popup showing exactly which data fields the website is requesting — Name, Demographics, Political Affiliation, and Address — each with a toggle to include or exclude it. The user selects what they want to share and clicks **Share Selected**.
+The user clicks **Connect Agent**. The extension opens a consent popup showing exactly which data fields the website is requesting — Name, Demographics, Political Affiliation, and Address — each with a toggle to include or exclude it. Each field states the purpose it will be used for. The user selects what they want to share and clicks **Share Selected**. The website immediately receives the data and can personalize the experience — no form to fill in, no manual entry.
 
 ![Extension data sharing consent popup](screenshots/Screenshot%20from%202026-03-17%2011-44-55.png)
 
-Instead of a full payment form, a compact **AFT Payment Mandate** popup appears directly in the extension. It shows the line items (Political Party X membership, additional donation) and the total, and the user signs and pays in one click.
+For the payment step, a compact **AP2 Payment Mandate** popup appears directly in the extension. It shows the merchant, line items, and total. The user reviews it and signs with one click — no card details entered on the website.
 
 ![Extension payment mandate popup](screenshots/Screenshot%20from%202026-03-17%2011-45-17.png)
 
@@ -58,15 +62,15 @@ At any time the user can open the extension's **Permissions** page to see every 
 
 ## Why is this the top pick for the hackathon?
 
-Agent Connect is a **progressive improvement** — it works for everyone without requiring anyone to change their existing setup.
+Agent Connect is a **progressive improvement** — it makes things better for every party involved, without requiring anyone to rip out their existing setup.
 
-**Users get a better experience.** No more filling in the same name, address, and payment details on every new website. With the extension installed, a single consent click pre-fills forms and completes payments. Returning to a site that already has your consent is even faster: it just works.
+**Users get a personalized web without giving up control.** With Agent Connect, websites can greet you by name, pre-fill your preferences, and tailor content to your profile — the same kind of personalization that today requires handing over your data permanently. Here, the data stays in your agent. You choose what to share each time, and you can take it back. No more filling in the same fields on every new site, and no more wondering what a company is doing with your information.
 
-**Websites get access to more data.** Because sharing is low-friction, users are more willing to provide richer information — demographics, political affiliation, preferences — that they would otherwise skip on a manual form. Sites get higher completion rates and better data quality.
+**Websites get richer, more accurate data.** Long forms have low completion rates — users skip optional fields and abandon flows entirely. Because sharing through Agent Connect is a single click, users are far more willing to share demographics, preferences, and other fields they would never bother typing. Sites get higher completion rates and better data quality, which directly improves personalization and targeting.
 
-**Users stay in control.** The permissions dashboard gives a clear, single place to see exactly which data was shared with which service, for what stated purpose, and when. Revoking access is one button press. No hunting through cookie banners or privacy settings buried in account pages.
+**Data ownership moves to the user.** Today your data is scattered across every service you have ever signed up for, with no way to see it all or reclaim it. Agent Connect flips this: your data lives in your agent, and websites receive a share — not a permanent copy. The permissions dashboard is a single place to see every field shared with every service, and revoking it is one button press.
 
-**It is purpose-built for GDPR compliance.** GDPR does not just require consent — it requires *purpose limitation*: data collected for one reason cannot be silently reused for another. Agent Connect surfaces the stated purpose of every data request at the moment of consent ("campaign optimization and member management"), stores it alongside the permission, and makes it visible in the dashboard. This gives both users and organisations a transparent, auditable record that maps directly onto GDPR's core requirements.
+**It is purpose-built for GDPR compliance.** GDPR does not just require consent — it requires *purpose limitation*: data collected for one reason cannot be silently reused for another. Agent Connect surfaces the stated purpose of every data request at the moment of consent (e.g. "campaign optimization and member management"), records it alongside the permission, and keeps it visible in the dashboard. This gives users a clear picture of what their data is being used for, and gives organisations a transparent, auditable consent record that maps directly onto GDPR's core requirements — without any extra compliance tooling.
 
 ---
 
@@ -130,15 +134,24 @@ Transaction complete, permissions stored
 
 ## Architecture
 
-The project is structured as a monorepo with three main packages:
+The project is structured as a monorepo. The packages split cleanly across two sides: the **De Staatsman side** (the organisation) and the **user side**.
+
+**De Staatsman side**
 
 | Package | Description |
 |---|---|
-| `packages/chrome-extension` | Plasmo-based Chrome extension — data agent, consent UI, permissions dashboard |
-| `packages/website` | Demo political party website (De Staatsman) — implements the Agent Connect protocol |
-| `packages/agent-server` | Backend agent server — handles A2A communication and data storage |
+| `packages/server-website` | The De Staatsman website — demo political party site that implements the Agent Connect protocol and shows the Agent Discovery widget |
+| `packages/server-agent` | The De Staatsman server agent — handles incoming A2A messages, exposes capabilities like `membership_application`, and acts on behalf of the organisation |
 
-The extension and website communicate via the **Agent Connect protocol**: a standardised A2A (agent-to-agent) handshake where websites advertise their data requirements and the extension mediates the user's consent and data transfer.
+**User side**
+
+| Package | Description |
+|---|---|
+| `packages/chrome-extension` | The Chrome extension — the user's interface for reviewing data requests, managing consent, and authorising payments |
+| `packages/user-agent` | The user's agent — the extension communicates with this agent, which holds the user's personal data and negotiates with the website's server agent over A2A |
+| `packages/dummy-user-agent` | A simplified stand-in for the user agent used during development, generating hardcoded A2UI component trees |
+
+The website and server agent act on behalf of **De Staatsman**. The extension and user agent act on behalf of the **user**. The two sides communicate exclusively through the A2A, A2UI, and AP2 protocols — neither side has direct access to the other's internals.
 
 ## Getting Started
 
