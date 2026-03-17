@@ -15,54 +15,110 @@
   },
   "capabilities": [
     {
-      "name": "policy_information",
-      "description": "Returns information about a policy topic.",
-      "input_schema": {
-        "type": "object",
-        "properties": {
-          "topic": {
-            "type": "string"
+      "name": "hello",
+      "description": "Greeting and introduction from the organization. Requests specific user data for personalization and regional information.",
+      "a2ui": [
+        {
+          "id": "root",
+          "type": "Container",
+          "children": [
+            "header-1",
+            "item-name",
+            "item-demographics",
+            "item-political-affiliation",
+            "item-address"
+          ]
+        },
+        {
+          "id": "header-1",
+          "type": "SectionHeader",
+          "props": {
+            "text": "Data Request"
+          }
+        },
+        {
+          "id": "item-name",
+          "type": "DataRequestItem",
+          "props": {
+            "label": "Name",
+            "description": "Necessary for personalizing communication and official registration in the database.",
+            "state": "on"
+          }
+        },
+        {
+          "id": "item-demographics",
+          "type": "NestedDataRequestItem",
+          "props": {
+            "label": "Demographics",
+            "items": [
+              { "id": "age", "label": "Age", "checked": true },
+              { "id": "gender", "label": "Gender", "checked": true }
+            ],
+            "footerText": "Used for statistical analysis and tailored content.",
+            "open": false
+          }
+        },
+        {
+          "id": "item-political-affiliation",
+          "type": "DataRequestItem",
+          "props": {
+            "label": "Political Affiliation",
+            "description": "Sensitive data: Used to show targeted political advertisements and information.",
+            "state": "off",
+            "isUnknown": true
+          }
+        },
+        {
+          "id": "item-address",
+          "type": "NestedDataRequestItem",
+          "props": {
+            "label": "Address",
+            "items": [
+              { "id": "city", "label": "City", "checked": true },
+              { "id": "streetName", "label": "Street Name", "checked": false }
+            ],
+            "footerText": "Required for regional campaign texts and invitations to local meetings.",
+            "open": true
           }
         }
-      }
+      ]
     },
     {
-      "name": "newsletter_signup",
-      "description": "Registers a supporter for the newsletter.",
+      "name": "membership_application",
+      "description": "Submit an application to become a member of De Staatsman.",
       "input_schema": {
         "type": "object",
-        "required": [
-          "email"
-        ],
         "properties": {
+          "full_name": {
+            "type": "string"
+          },
           "email": {
             "type": "string",
             "format": "email"
           },
-          "name": {
-            "type": "string"
-          }
-        }
-      }
-    },
-    {
-      "name": "membership_application",
-      "description": "Submit an application to become a member.",
-      "input_schema": {
-        "type": "object",
-        "required": [
-          "name",
-          "email",
-          "country"
-        ],
-        "properties": {
-          "name": {
+          "date_of_birth": {
+            "type": "string",
+            "format": "date"
+          },
+          "gender": {
+            "type": "string",
+            "enum": [
+              "Prefer not to say",
+              "Male",
+              "Female",
+              "Other"
+            ]
+          },
+          "street_name": {
             "type": "string"
           },
-          "email": {
+          "house_number": {
             "type": "string"
           },
-          "country": {
+          "postal_code": {
+            "type": "string"
+          },
+          "city": {
             "type": "string"
           }
         }
