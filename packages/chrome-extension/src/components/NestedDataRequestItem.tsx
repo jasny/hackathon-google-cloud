@@ -68,10 +68,8 @@ export const NestedDataRequestItem = ({
           </div>
         ))}
         {footerText && (
-          <div className="mt-2 border-t border-slate-200 pt-2">
-            <p className="text-[10px] text-slate-500 italic leading-snug">
-              "{footerText}"
-            </p>
+          <div className="mt-2 border-t border-slate-200 pt-2 text-[11px] text-slate-500 leading-relaxed">
+            {footerText}
           </div>
         )}
       </div>
