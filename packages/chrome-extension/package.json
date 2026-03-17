@@ -9,6 +9,11 @@
     "build": "plasmo build",
     "package": "plasmo package"
   },
+  "manifest": {
+    "permissions": [
+      "contextMenus"
+    ]
+  },
   "dependencies": {
     "@radix-ui/react-slot": "^1.2.4",
     "@radix-ui/react-switch": "^1.2.6",
