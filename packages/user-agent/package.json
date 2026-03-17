@@ -4,6 +4,7 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
+    "start": "node dist/example.js",
     "dev": "tsc -w"
   },
   "devDependencies": {
